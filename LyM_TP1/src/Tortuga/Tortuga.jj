@@ -1,0 +1,68 @@
+/**
+ * JavaCC template file created by SF JavaCC plugin 1.5.28+ wizard for JavaCC 1.5.0+
+ */options{  static = true;}PARSER_BEGIN(Tortuga)package Tortuga;
+
+public class Tortuga{  public static void main(String args []) throws ParseException  {    Tortuga parser = new Tortuga(System.in);    while (true)    {      System.out.println("Reading from standard input...");      System.out.print("Enter an expression like \"1+(2+3)*4;\" :");      try      {        switch (Tortuga.one_line())        {          case 0 :           System.out.println("OK.");          break;          case 1 :           System.out.println("Goodbye.");          break;          default :           break;        }      }      catch (Exception e)      {        System.out.println("NOK.");        System.out.println(e.getMessage());        Tortuga.ReInit(System.in);      }      catch (Error e)      {        System.out.println("Oops.");        System.out.println(e.getMessage());        break;      }    }  }}PARSER_END(Tortuga)SKIP :
+{
+ "\n"
+| "."
+}
+
+TOKEN : /* Comandos Básicos */
+{
+  < FORWARD : < OPF >(< DIGIT >)+ >
+| < BACK : < OPB >>   
+| < TURN : < OPT >(< DIGIT >)+ > /*Girar a un lado un número de grados*/
+
+| < CLEARSCREEN : < OPCS >> /*Limpia la pantalla*/
+| < PENUP : "penup" > //Levanta el lapiz*
+| < PENDOWN : "pendown" > /*Baja el lapiz*/
+| < HIDE : "hideturtle" > /*Esconde la tortuga */
+| < SHOW : "showturtle" > /*Muestra la tortuga*/
+
+| < HOME : "home"> //Centrar en el punto*
+| < SETX : "setx" (< DIGIT >)+ > //Establecer corrdenada x
+| < SETY : "sety" (< DIGIT >)+ > //<DIGIT>+
+| < SETXY : "setxy" "("(< DIGIT >)+ "," (< DIGIT >)+ ")"> //(<DIGIT>+)(<DIGIT>+)
+| < SETHEADING : < OPSETH >>
+
+| < ARC : "arc" > // ANGLE y RADIUS
+| < CHANGESHAPE : < OPCSH > > //NAME o ID
+
+| < POSITION : "pos" >
+| < XCOR : "xcor" >
+| < YCOR : "ycor" >
+| < HEADING : "heading" >
+| < TOWARDS : "towards list" >
+
+| < LABEL : "label" >
+| < FONT : "setlabelheight" >
+| < WIDTH : "setwidth" >
+
+| < TO : "to" "end">
+
+| < COLOR : "setcolor" >
+| < PRINT : "print" >
+| < RANDOM : "random" >
+
+| < MAKE : "make" >
+| < SUM : "sum" >
+| < DIFFERENCE : "difference" >
+}
+
+TOKEN : /* OPCIONES */
+{
+  < OPF : ("forward" | "fd" )>
+| < OPB : ("back" | "bk") >  
+| < OPT : ("left" | "right" | "rt" | "lt") >
+| < OPCS : ("clearscreen" | "cs") >
+| < OPSETH : ("setheading" | "seth") >
+| < OPCSH : ("changeshpae" | "csh") >
+}
+
+TOKEN : //Loops
+{
+  < LOOP : "repeat">
+| < FOR : "for" >
+}
+TOKEN : /* OPERATORS */{  < PLUS : "+" >| < MINUS : "-" >| < MULTIPLY : "*" >| < DIVIDE : "/" >}TOKEN :{  < CONSTANT : (< DIGIT >)+ >| < #DIGIT : [ "0"-"9" ] >}int one_line() :{}{  sum() ";"  {    return 0;  }| ";"  {    return 1;  }}void sum() :{}{  term()  (    (      < PLUS >    | < MINUS >    )    term()  )*}void term() :{}{  unary()  (    (      < MULTIPLY >    | < DIVIDE >    )    unary()  )*}void unary() :{}{  < MINUS > element()| element()}void element() :{}{  < CONSTANT >| "(" sum() ")"}
