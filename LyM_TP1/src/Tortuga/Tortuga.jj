@@ -2,7 +2,47 @@
  * JavaCC template file created by SF JavaCC plugin 1.5.28+ wizard for JavaCC 1.5.0+
  */options{  static = true;}PARSER_BEGIN(Tortuga)package Tortuga;
 
-public class Tortuga{  public static void main(String args []) throws ParseException  {    Tortuga parser = new Tortuga(System.in);    while (true)    {      System.out.println("Reading from standard input...");      System.out.print("Enter an expression like \"1+(2+3)*4;\" :");      try      {        switch (Tortuga.one_line())        {          case 0 :           System.out.println("OK.");          break;          case 1 :           System.out.println("Goodbye.");          break;          default :           break;        }      }      catch (Exception e)      {        System.out.println("NOK.");        System.out.println(e.getMessage());        Tortuga.ReInit(System.in);      }      catch (Error e)      {        System.out.println("Oops.");        System.out.println(e.getMessage());        break;      }    }  }}PARSER_END(Tortuga)SKIP :
+public class Tortuga{  public static void main(String args []) throws ParseException  {    Tortuga parser = new Tortuga(System.in);    while (true)    {      System.out.println("Reading from standard input...");      System.out.print("Enter an expression like \"1+(2+3)*4;\" :");      try      {        switch (Tortuga.one_line())        {          case 0 :           System.out.println("OK.");          break;          case 1 :           System.out.println("Goodbye.");          break;          default :           break;        }      }      catch (Exception e)      {        System.out.println("NOK.");        System.out.println(e.getMessage());        Tortuga.ReInit(System.in);      }      catch (Error e)      {        System.out.println("Oops.");        System.out.println(e.getMessage());        break;      }    }  }}PARSER_END(Tortuga)
+
+/*
+GRAMATICA TORTUGA:
+
+1. Logo de la Tortuga
+
+forward N: Hace que la tortuga se mueva hacia adelante, en este caso N indica la distancia a la que se va a mover.
+		   En caso de que N sea negativa se movera en la dirección opuesta.
+left N: Hace que la tortuga gire hacia la izquierda N grados. En caso de que N sea negativa, la tortuga se gira
+		en la dirección opuesta N grados.
+right N: Hace que la tortuga gire hacia la derecha N grados. En caso de que N sea negativa, la tortuga se gira
+		en la dirección opuesta N grados.
+clearscreen: Limpia la pantalla donde se encuentra la tortuga.
+
+fd N: Es la abreviación de forward N, cumple el mismo proposito de este.
+lt N: Es la abreviación de left N, cumple el mismo proposito de este.
+rt N: Es la abreviación de right N, cumple el mismo proposito de este.
+cs: Es la abreviación de clearscreen, cumple el mismo proposito de este.
+
+2. Controlar la Tortuga y el Lápiz
+
+penup: Hace que el lápiz se levante, y no se marque ningún movimiento
+pendown : Hace que el lápiz vuelva a su sitio, se vuelven a marcar los movimientos
+hideturtle: Hace que la tortuga se esconda, se puede seguir moviendo pero no se ve en el cuadro
+showturtle: Hace que la trotuga aparezca, se vuelve a ver la tortuga dentro del cuadro
+
+3. Mundo de la Tortuga
+
+home: Devuelve la tortuga al punto inicial del cuadro (0, 0)
+setx N: Mueve la tortuga a la cordenada N en el eje x
+sety N: Mueve la tortuga a la cordenada N en el eje y
+setxy N M: Mueve la tortuga a la cordenada N en el eje x y a la cordenada M en el eje y
+setheading N: Gira la tortuga para que apunte al angulo N
+arc N M: Crea un arco con un angulo de N y un radio de M
+changeshape N: Cambia la forma de la tortuga donde N es el id o el nombre de la figura a cambiar
+
+seth N: Es la abreviación de setheading N, cumple el mismo proposito que este
+csh N: Es la abreviación de changeshape N, cumple el mismo proposito que este
+*/
+SKIP :
 {
  "\n"
 | "."
@@ -10,49 +50,51 @@ public class Tortuga{  public static void main(String args []) throws ParseExc
 
 TOKEN : /* Comandos Básicos */
 {
-  < FORWARD : < OPF >(< DIGIT >)+ >
-| < BACK : < OPB >>   
-| < TURN : < OPT >(< DIGIT >)+ > /*Girar a un lado un número de grados*/
+  < FORWARD : <OPF>(< SIGN >)?(< DIGIT >)+ > //Avanza una distancia especificada
+| < BACK : < OPB >(< SIGN >)?(< DIGIT >)+>  //Retrocede la distancia especificada
+| < TURN : < OPT >(< SIGN >)?(< DIGIT >)+ > //Gira hacia el lado especificado, un número de grados
 
-| < CLEARSCREEN : < OPCS >> /*Limpia la pantalla*/
-| < PENUP : "penup" > //Levanta el lapiz*
-| < PENDOWN : "pendown" > /*Baja el lapiz*/
-| < HIDE : "hideturtle" > /*Esconde la tortuga */
-| < SHOW : "showturtle" > /*Muestra la tortuga*/
+| < CLEARSCREEN : < OPCS >> //Limpia la pantalla
+| < PENUP : "penup" > //Levanta el lapiz
+| < PENDOWN : "pendown" > //Baja el lapiz
+| < HIDE : "hideturtle" > //Esconde la tortuga 
+| < SHOW : "showturtle" > //SMuestra la tortuga
 
-| < HOME : "home"> //Centrar en el punto*
-| < SETX : "setx" (< DIGIT >)+ > //Establecer corrdenada x
-| < SETY : "sety" (< DIGIT >)+ > //<DIGIT>+
-| < SETXY : "setxy" "("(< DIGIT >)+ "," (< DIGIT >)+ ")"> //(<DIGIT>+)(<DIGIT>+)
-| < SETHEADING : < OPSETH >>
+| < HOME : "home"> //Devuelve la tortuga a su punto de inicio
+| < SETX : "setx"(< SIGN >)?(< DIGIT >)+ > //Establece la cordenada x a una especificada
+| < SETY : "sety"(< SIGN >)?(< DIGIT >)+ > //Establece la cordenada  a una especificada
+| < SETXY : "setxy"(< SIGN >)?(< DIGIT >)+(< SIGN >)?(< DIGIT >)+> //Establece las cordenadas x, y especificadas
+| < SETHEADING : < OPSETH >(< DIGIT >)+>//Apunta la tortuga a un angulo en especifico
 
-| < ARC : "arc" > // ANGLE y RADIUS
-| < CHANGESHAPE : < OPCSH > > //NAME o ID
+| < ARC : "arc"(< DIGIT >)+(< DIGIT >)+> // Crea un arco con angulo y radio dados
+| < CHANGESHAPE : < OPCSH > ("\""(< LETTER >)+)|(< DIGIT >)+> //cambia la forma de la tortuga con el nombre o id de otra forma
 
-| < POSITION : "pos" >
-| < XCOR : "xcor" >
-| < YCOR : "ycor" >
-| < HEADING : "heading" >
-| < TOWARDS : "towards list" >
+| < POSITION : "pos" > //Devuelve las coordenadas donde se encuentra la tortuga
+| < XCOR : "xcor" >//Devuelve la coordenada en x de la tortuga
+| < YCOR : "ycor" >//Devuelve la coordenada en y de la tortuga
+| < HEADING : "heading" >//Devuelve hacia donde esta apuntando la tortuga
+| < TOWARDS : "towards list" (< SIGN >)?(< DIGIT >)+(< SIGN >)?(< DIGIT >)+>//Apunta la tortuga hacia las coordenadas x,y dadas
 
-| < LABEL : "label" >
-| < FONT : "setlabelheight" >
-| < WIDTH : "setwidth" >
+| < LABEL : "label"("\""(< LETTER >)+)>//Escribe el string que se proporciona en la pantallas
+| < FONT : "setlabelheight"(< DIGIT >)+>//Cambia el tamaño del texto
 
-| < TO : "to" "end">
+| < WIDTH : "setwidth"(< DIGIT >)+ >//Ajusta el ancho del lápiz
 
-| < COLOR : "setcolor" >
-| < PRINT : "print" >
-| < RANDOM : "random" >
+| < TO : "to" (< LETTER >)+ "" ((":"(< LETTER >)+)?)*((< OPCIONES >)+)((":"(< LETTER >)+)?)* "end">//Le enseña a la tortuga un nuevo comando, este puede o no tener parametros
 
-| < MAKE : "make" >
-| < SUM : "sum" >
-| < DIFFERENCE : "difference" >
+| < COLOR : "setcolor"(< DIGIT >)+>//Cambia el color usando el ID del color nuevo
+| < PRINT : "print""\""(< LETTER >)+>//Imprime la palabra escrita
+| < RANDOM : "random"(< DIGIT >)+>//Imprime un número aleatorio entre el 0 y el número ingresado menos 1
+
+| < MAKE : "make""\""(< LETTER >)+(< DIGIT >)+ >//Crea una variable con el nombre y valor asignados
+| < SUM : "sum"(< DIGIT >)+(< DIGIT >)+>//Suma los dos valores proporcionados
+| < DIFFERENCE : "difference"(< DIGIT >)+(< DIGIT >)+>//Resta el segundo valor del primero
 }
+
 
 TOKEN : /* OPCIONES */
 {
-  < OPF : ("forward" | "fd" )>
+  < OPF : ("forward" | "fd") >
 | < OPB : ("back" | "bk") >  
 | < OPT : ("left" | "right" | "rt" | "lt") >
 | < OPCS : ("clearscreen" | "cs") >
@@ -62,7 +104,14 @@ TOKEN : /* OPCIONES */
 
 TOKEN : //Loops
 {
-  < LOOP : "repeat">
-| < FOR : "for" >
+  < LOOP : "repeat"(< DIGIT >)?"[" (< OPCIONES >)+"]">//Crea el loop con los procesos a hacer
+| < FOR : "for""["((< LETTER >)+|(< DIGIT >)+)*"]"" ""["(< LETTER >)+ ":"(< LETTER >)+"]">
 }
-TOKEN : /* OPERATORS */{  < PLUS : "+" >| < MINUS : "-" >| < MULTIPLY : "*" >| < DIVIDE : "/" >}TOKEN :{  < CONSTANT : (< DIGIT >)+ >| < #DIGIT : [ "0"-"9" ] >}int one_line() :{}{  sum() ";"  {    return 0;  }| ";"  {    return 1;  }}void sum() :{}{  term()  (    (      < PLUS >    | < MINUS >    )    term()  )*}void term() :{}{  unary()  (    (      < MULTIPLY >    | < DIVIDE >    )    unary()  )*}void unary() :{}{  < MINUS > element()| element()}void element() :{}{  < CONSTANT >| "(" sum() ")"}
+
+TOKEN : //Total
+{
+  < OPCIONES : (< FORWARD >|< TURN >)>
+}TOKEN :{ < CONSTANT : (< DIGIT >)+ >|  < #DIGIT : [ "0"-"9" ] >
+| < #LETTER : ["a" - "z"] >
+| < SIGN : "-" >
+| < DIGITO : ("1"|"2"|"3"|"4"|"5"|"6"|"7"|"8"|"9") >}int one_line() :{}{  "o"  {    return 0;  }| ";"  {    return 1;  }}
