@@ -2,7 +2,7 @@
  * JavaCC template file created by SF JavaCC plugin 1.5.28+ wizard for JavaCC 1.5.0+
  */options{  static = true;}PARSER_BEGIN(Tortuga)package Tortuga;
 
-public class Tortuga{  public static void main(String args []) throws ParseException  {    Tortuga parser = new Tortuga(System.in);    while (true)    {      System.out.println("Reading from standard input...");      System.out.print("Enter an expression like \"1+(2+3)*4;\" :");      try      {        switch (Tortuga.one_line())        {          case 0 :           System.out.println("OK.");          break;          case 1 :           System.out.println("Goodbye.");          break;          default :           break;        }      }      catch (Exception e)      {        System.out.println("NOK.");        System.out.println(e.getMessage());        Tortuga.ReInit(System.in);      }      catch (Error e)      {        System.out.println("Oops.");        System.out.println(e.getMessage());        break;      }    }  }}PARSER_END(Tortuga)
+public class Tortuga{  public static void main(String args []) throws ParseException  {    Tortuga parser = new Tortuga(System.in);    while (true)    {      System.out.println("Reading from standard input...");      System.out.print("Enter an expression:");      try      {        switch (Tortuga.one_line())        {          case 0 :           System.out.println("OK.");          break;          case 1 :           System.out.println("Goodbye.");          break;          default :           break;        }      }      catch (Exception e)      {        System.out.println("NOK.");        System.out.println(e.getMessage());        Tortuga.ReInit(System.in);      }      catch (Error e)      {        System.out.println("Oops.");        System.out.println(e.getMessage());        break;      }    }  }}PARSER_END(Tortuga)
 
 /*
 GRAMATICA TORTUGA:
@@ -41,54 +41,114 @@ changeshape N: Cambia la forma de la tortuga donde N es el id o el nombre de la 
 
 seth N: Es la abreviación de setheading N, cumple el mismo proposito que este
 csh N: Es la abreviación de changeshape N, cumple el mismo proposito que este
+
+4. Respuesta de la tortuga
+
+pos: Regresa las coordenadas (x, y) de donde se encuentra ubicada la tortuga
+xcor: Regresa la coordenada x de la tortuga
+ycor: Regresa la coordenada y de la tortuga
+heading: Regresa la dirección en grados de hacia donde esta apuntando la tortuga
+towards list X Y: Regresa el angulo al cual debe apuntar la tortuga para llegar a las coordenadas (X, Y)
+
+5. Labels
+
+label N: Hace que la tortuga escriba el string N que se le proporciona, en la dirección en la que apunta la tortuga
+setlabelheight N: Establece el tamaño del texto a N, donde N es un entero positivo
+
+6. Loops
+
+repeat N [P]: Repite N veces el procedimiento P
+back N: Mueve la tortuga N unidades para atrás
+
+bk: Abreviación del proceso back, cumple el mismo propósito que este
+
+7. Poligonos
+
+Por medio de la implementación de los loops y los comandos básicos es posible dibujar formas
+
+8. Tamaño del lápiz
+
+setwidth N: Establece el ancho del lápiz a N
+
+9. Enseñarle a la tortuga
+
+to W P end: Crea un nuevo procedimiento llamado W en el cual se realizan las accciones P
+
+10. Colores
+
+setcolor N: Cambia el color del lápiz usando N como el ID del color a cambiar, N se encuentra entre 1 y 15
+print S: Imprime S en el cuadro de la tortuga, S puede ser una palabra o un comando de los que regresa un valor
+random N: Escoge un número aleatorio entre 0 y N-1
+
+11. Variables
+
+make "T V: Crea la variable T y le asigna el valor V, para acceder al valor de las variables se usa :T
+sum A B: Suma  X y Y (X+Y)
+difference A B: Resta A y B (A-B)
+
+12. Procedimientos
+
+to W :X :Y P end: Realiza el procedimiento W usando los parametros X, Y
+
+13. For Loop
+
+for [V X Y A][P]: Realiza el procedimiento P usando como contador la variable V, que va de X a Y y crece por A
+
+14. Recursión
+
+to N X P X end: Realizar el procedimiento P usando el valor de X
+
+15. EXTRAS
+
+if C [P]: Realiza la verificación de que la condición se cumpla y luego realiza el proceso P
 */
 SKIP :
 {
  "\n"
 | "."
+| "\r"
 }
 
 TOKEN : /* Comandos Básicos */
 {
-  < FORWARD : <OPF>(< SIGN >)?(< DIGIT >)+ > //Avanza una distancia especificada
-| < BACK : < OPB >(< SIGN >)?(< DIGIT >)+>  //Retrocede la distancia especificada
-| < TURN : < OPT >(< SIGN >)?(< DIGIT >)+ > //Gira hacia el lado especificado, un número de grados
+  < FORWARD : <OPF>< SIGN >(< SIGN >)?(< DIGIT >)+ >
+| < BACK : < OPB >(< SIGN >)?(< DIGIT >)+>
+| < TURN : < OPT >(< SIGN >)?(< DIGIT >)+ >
 
-| < CLEARSCREEN : < OPCS >> //Limpia la pantalla
-| < PENUP : "penup" > //Levanta el lapiz
-| < PENDOWN : "pendown" > //Baja el lapiz
-| < HIDE : "hideturtle" > //Esconde la tortuga 
-| < SHOW : "showturtle" > //SMuestra la tortuga
+| < CLEARSCREEN : < OPCS >>
+| < PENUP : "penup" >
+| < PENDOWN : "pendown" >
+| < HIDE : "hideturtle" >
+| < SHOW : "showturtle" >
 
-| < HOME : "home"> //Devuelve la tortuga a su punto de inicio
-| < SETX : "setx"(< SIGN >)?(< DIGIT >)+ > //Establece la cordenada x a una especificada
-| < SETY : "sety"(< SIGN >)?(< DIGIT >)+ > //Establece la cordenada  a una especificada
-| < SETXY : "setxy"(< SIGN >)?(< DIGIT >)+(< SIGN >)?(< DIGIT >)+> //Establece las cordenadas x, y especificadas
-| < SETHEADING : < OPSETH >(< DIGIT >)+>//Apunta la tortuga a un angulo en especifico
+| < HOME : "home">
+| < SETX : "setx"(< SIGN >)?(< DIGIT >)+ >
+| < SETY : "sety"(< SIGN >)?(< DIGIT >)+ >
+| < SETXY : "setxy"(< SIGN >)?(< DIGIT >)+(< SIGN >)?(< DIGIT >)+>
+| < SETHEADING : < OPSETH >(< DIGIT >)+>
 
-| < ARC : "arc"(< DIGIT >)+(< DIGIT >)+> // Crea un arco con angulo y radio dados
-| < CHANGESHAPE : < OPCSH > ("\""(< LETTER >)+)|(< DIGIT >)+> //cambia la forma de la tortuga con el nombre o id de otra forma
+| < ARC : "arc"(< DIGIT >)+(< DIGIT >)+>
+| < CHANGESHAPE : < OPCSH > ("\""(< LETTER >)+)|(< DIGIT >)+>
 
-| < POSITION : "pos" > //Devuelve las coordenadas donde se encuentra la tortuga
-| < XCOR : "xcor" >//Devuelve la coordenada en x de la tortuga
-| < YCOR : "ycor" >//Devuelve la coordenada en y de la tortuga
-| < HEADING : "heading" >//Devuelve hacia donde esta apuntando la tortuga
-| < TOWARDS : "towards list" (< SIGN >)?(< DIGIT >)+(< SIGN >)?(< DIGIT >)+>//Apunta la tortuga hacia las coordenadas x,y dadas
+| < POSITION : "pos" >
+| < XCOR : "xcor" >
+| < YCOR : "ycor" >
+| < HEADING : "heading" >
+| < TOWARDS : "towards list" (< SIGN >)?(< DIGIT >)+(< SIGN >)?(< DIGIT >)+>
 
-| < LABEL : "label"("\""(< LETTER >)+)>//Escribe el string que se proporciona en la pantallas
-| < FONT : "setlabelheight"(< DIGIT >)+>//Cambia el tamaño del texto
+| < LABEL : "label"("\""(< LETTER >)+)>
+| < FONT : "setlabelheight"(< DIGIT >)+>
 
-| < WIDTH : "setwidth"(< DIGIT >)+ >//Ajusta el ancho del lápiz
+| < WIDTH : "setwidth"(< DIGIT >)+ >
 
-| < TO : "to" (< LETTER >)+ "" ((":"(< LETTER >)+)?)*((< OPCIONES >)+)((":"(< LETTER >)+)?)* "end">//Le enseña a la tortuga un nuevo comando, este puede o no tener parametros
+| < TO : "to" (< LETTER >)+ "" ((":"(< LETTER >)+)?)*((< LETTER >)+|(< DIGIT >)+)*((":"(< LETTER >)+)?)* "end">
+| < COLOR : "setcolor"(< DIGIT >)+>
+| < PRINT : "print""\""(< LETTER >)+>
+| < RANDOM : "random"(< DIGIT >)+>
 
-| < COLOR : "setcolor"(< DIGIT >)+>//Cambia el color usando el ID del color nuevo
-| < PRINT : "print""\""(< LETTER >)+>//Imprime la palabra escrita
-| < RANDOM : "random"(< DIGIT >)+>//Imprime un número aleatorio entre el 0 y el número ingresado menos 1
-
-| < MAKE : "make""\""(< LETTER >)+(< DIGIT >)+ >//Crea una variable con el nombre y valor asignados
-| < SUM : "sum"(< DIGIT >)+(< DIGIT >)+>//Suma los dos valores proporcionados
-| < DIFFERENCE : "difference"(< DIGIT >)+(< DIGIT >)+>//Resta el segundo valor del primero
+| < MAKE : "make""\""(< LETTER >)+(< DIGIT >)+ >
+| < SUM : "sum"(< DIGIT >)+(< DIGIT >)+>
+| < DIFFERENCE : "difference"(< DIGIT >)+(< DIGIT >)+>
 }
 
 
@@ -104,14 +164,10 @@ TOKEN : /* OPCIONES */
 
 TOKEN : //Loops
 {
-  < LOOP : "repeat"(< DIGIT >)?"[" (< OPCIONES >)+"]">//Crea el loop con los procesos a hacer
+  < LOOP : "repeat"(< DIGIT >)+"[" ((< LETTER >)+ "" (< DIGIT >)+)*"]">
 | < FOR : "for""["((< LETTER >)+|(< DIGIT >)+)*"]"" ""["(< LETTER >)+ ":"(< LETTER >)+"]">
 }
-
-TOKEN : //Total
-{
-  < OPCIONES : (< FORWARD >|< TURN >)>
-}TOKEN :{ < CONSTANT : (< DIGIT >)+ >|  < #DIGIT : [ "0"-"9" ] >
-| < #LETTER : ["a" - "z"] >
-| < SIGN : "-" >
-| < DIGITO : ("1"|"2"|"3"|"4"|"5"|"6"|"7"|"8"|"9") >}int one_line() :{}{  "o"  {    return 0;  }| ";"  {    return 1;  }}
+TOKEN :{ < CONSTANT : (< DIGIT >)+ >|  < #DIGIT : ["0"-"9"] >
+| < #LETTER : ["a" - "z"]|["A"-"Z"] >
+| < SIGN : ("-"|"\""|":"|" "|"["|"]") >| < JUMP : ("\n"|".") >
+}int one_line() :{}{   (< FORWARD > | < BACK >)  {    return 0;  }| "DONE"  {    return 1;  }}
