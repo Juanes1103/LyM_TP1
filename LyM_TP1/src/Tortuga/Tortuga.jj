@@ -2,7 +2,7 @@
  * JavaCC template file created by SF JavaCC plugin 1.5.28+ wizard for JavaCC 1.5.0+
  */options{  static = true;}PARSER_BEGIN(Tortuga)package Tortuga;
 
-public class Tortuga{  public static void main(String args []) throws ParseException  {    Tortuga parser = new Tortuga(System.in);    while (true)    {      System.out.println("Reading from standard input...");      System.out.print("Enter an expression:");      try      {        switch (Tortuga.one_line())        {          case 0 :           System.out.println("OK.");          break;          case 1 :           System.out.println("Goodbye.");          break;          default :           break;        }      }      catch (Exception e)      {        System.out.println("NOK.");        System.out.println(e.getMessage());        Tortuga.ReInit(System.in);      }      catch (Error e)      {        System.out.println("Oops.");        System.out.println(e.getMessage());        break;      }    }  }}PARSER_END(Tortuga)
+public class Tortuga{  public static void main(String args []) throws ParseException  {    Tortuga parser = new Tortuga(System.in);    while (true)    {      System.out.println("Reading from standard input...");      System.out.print("Enter an expression: ");      try      {        switch (Tortuga.one_line())        {          case 0 :           System.out.println("OK.");          break;          case 1 :           System.out.println("Goodbye.");          break;          default :           break;        }      }      catch (Exception e)      {        System.out.println("NOK.");        System.out.println(e.getMessage());        Tortuga.ReInit(System.in);      }      catch (Error e)      {        System.out.println("Oops.");        System.out.println(e.getMessage());        break;      }    }  }}PARSER_END(Tortuga)
 
 /*
 GRAMATICA TORTUGA:
@@ -112,8 +112,8 @@ if C [P]: Realiza la verificación de que la condición se cumpla y luego realiz
 TOKEN : /* Comandos Básicos */
 {
   < FORWARD : <OPF>< SIGN >(< SIGN >)?(< DIGIT >)+ >
-| < BACK : < OPB >(< SIGN >)?(< DIGIT >)+>
-| < TURN : < OPT >(< SIGN >)?(< DIGIT >)+ >
+| < BACK : < OPB >< SIGN >(< SIGN >)?(< DIGIT >)+>
+| < TURN : < OPT >< SIGN >(< SIGN >)?(< DIGIT >)+ >
 
 | < CLEARSCREEN : < OPCS >>
 | < PENUP : "penup" >
@@ -122,33 +122,33 @@ TOKEN : /* Comandos Básicos */
 | < SHOW : "showturtle" >
 
 | < HOME : "home">
-| < SETX : "setx"(< SIGN >)?(< DIGIT >)+ >
-| < SETY : "sety"(< SIGN >)?(< DIGIT >)+ >
-| < SETXY : "setxy"(< SIGN >)?(< DIGIT >)+(< SIGN >)?(< DIGIT >)+>
-| < SETHEADING : < OPSETH >(< DIGIT >)+>
+| < SETX : "setx"< SIGN >(< SIGN >)?(< DIGIT >)+ >
+| < SETY : "sety"< SIGN >(< SIGN >)?(< DIGIT >)+ >
+| < SETXY : "setxy"< SIGN >(< SIGN >)?(< DIGIT >)+< SIGN >(< SIGN >)?(< DIGIT >)+>
+| < SETHEADING : < OPSETH >< SIGN >(< DIGIT >)+>
 
-| < ARC : "arc"(< DIGIT >)+(< DIGIT >)+>
-| < CHANGESHAPE : < OPCSH > ("\""(< LETTER >)+)|(< DIGIT >)+>
+| < ARC : "arc"< SIGN >(< DIGIT >)+< SIGN >(< DIGIT >)+>
+| < CHANGESHAPE : < OPCSH >< SIGN >((< SIGN >(< LETTER >)+)|(< DIGIT >)+)>
 
 | < POSITION : "pos" >
 | < XCOR : "xcor" >
 | < YCOR : "ycor" >
 | < HEADING : "heading" >
-| < TOWARDS : "towards list" (< SIGN >)?(< DIGIT >)+(< SIGN >)?(< DIGIT >)+>
+| < TOWARDS : "towards list"< SIGN >(< SIGN >)?(< DIGIT >)+< SIGN >(< SIGN >)?(< DIGIT >)+>
 
-| < LABEL : "label"("\""(< LETTER >)+)>
-| < FONT : "setlabelheight"(< DIGIT >)+>
+| < LABEL : "label"< SIGN >< SIGN >(< LETTER >)+>
+| < FONT : "setlabelheight"< SIGN >(< DIGIT >)+>
 
-| < WIDTH : "setwidth"(< DIGIT >)+ >
+| < WIDTH : "setwidth"< SIGN >(< DIGIT >)+ >
 
-| < TO : "to" (< LETTER >)+ "" ((":"(< LETTER >)+)?)*((< LETTER >)+|(< DIGIT >)+)*((":"(< LETTER >)+)?)* "end">
-| < COLOR : "setcolor"(< DIGIT >)+>
-| < PRINT : "print""\""(< LETTER >)+>
-| < RANDOM : "random"(< DIGIT >)+>
+| < TO : "to"< SIGN >(< LETTER >)+< SIGN > (< SIGN >(< LETTER >)+)? < SIGN >((< SIGN >)?(< LETTER >)+ < SIGN > | (< SIGN >)?(< LETTER >)+< SIGN >(< DIGIT >)+< SIGN >)+< SIGN >"end">
+| < COLOR : "setcolor"< SIGN >(< DIGIT >)+>
+| < PRINT : "print"< SIGN >< SIGN >(< LETTER >)+>
+| < RANDOM : "random"< SIGN >(< DIGIT >)+>
 
-| < MAKE : "make""\""(< LETTER >)+(< DIGIT >)+ >
-| < SUM : "sum"(< DIGIT >)+(< DIGIT >)+>
-| < DIFFERENCE : "difference"(< DIGIT >)+(< DIGIT >)+>
+| < MAKE : "make"< SIGN >< SIGN >(< LETTER >)+< SIGN >(< DIGIT >)+ >
+| < SUM : "sum"< SIGN >(< DIGIT >)+< SIGN >(< DIGIT >)+>
+| < DIFFERENCE : "difference"< SIGN >(< DIGIT >)+< SIGN >(< DIGIT >)+>
 }
 
 
@@ -159,15 +159,22 @@ TOKEN : /* OPCIONES */
 | < OPT : ("left" | "right" | "rt" | "lt") >
 | < OPCS : ("clearscreen" | "cs") >
 | < OPSETH : ("setheading" | "seth") >
-| < OPCSH : ("changeshpae" | "csh") >
+| < OPCSH : ("changeshape" | "csh") >
 }
 
 TOKEN : //Loops
 {
-  < LOOP : "repeat"(< DIGIT >)+"[" ((< LETTER >)+ "" (< DIGIT >)+)*"]">
-| < FOR : "for""["((< LETTER >)+|(< DIGIT >)+)*"]"" ""["(< LETTER >)+ ":"(< LETTER >)+"]">
+  < LOOP : "repeat"< SIGN >(< DIGIT >)+< SIGN >((< LETTER >)+< SIGN >(< DIGIT >)+)*< SIGN >>
+| < FOR : "for"< SIGN >< SIGN >((< LETTER >)+|(< DIGIT >)+)*< SIGN >< SIGN >< SIGN >(< LETTER >)+ < SIGN >(< LETTER >)+< SIGN >>
+| < IF : "if" < SIGN >((< SIGN >)?(< LETTER >)+|(< DIGIT >)+)(< SIGN >)+((< LETTER >)+|(< DIGIT >)+)< SIGN >< SIGN >((< SIGN >)?(< LETTER >)+ < SIGN > | (< SIGN >)?(< LETTER >)+< SIGN >(< DIGIT >)+< SIGN >)+ >
 }
 TOKEN :{ < CONSTANT : (< DIGIT >)+ >|  < #DIGIT : ["0"-"9"] >
-| < #LETTER : ["a" - "z"]|["A"-"Z"] >
-| < SIGN : ("-"|"\""|":"|" "|"["|"]") >| < JUMP : ("\n"|".") >
-}int one_line() :{}{   (< FORWARD > | < BACK >)  {    return 0;  }| "DONE"  {    return 1;  }}
+| < #LETTER : (["a" - "z"]|["A"-"Z"])>
+| < SIGN : ("-"|"\""|":"|" "|"["|"]"|"="|"<"|">") >| < JUMP : ("\n"|".") >
+}int one_line() :{}{   (< FORWARD > | < BACK > | < TURN > | < CLEARSCREEN >
+    | < PENUP > | < PENDOWN > | < HIDE > | < SHOW >
+    | < HOME > | < SETX > | < SETY > |< SETHEADING >
+    | < ARC > | < CHANGESHAPE > | < POSITION > | < XCOR >
+    | < YCOR > | < HEADING > | < TOWARDS > | < LABEL > | < FONT >
+    | < WIDTH > | < TO > | < COLOR > | < PRINT > | < RANDOM > | < MAKE >
+    | < SUM > | < DIFFERENCE > | < LOOP > | < FOR > | < IF >| < JUMP > | < SIGN >)  {    return 0;  }| "DONE"  {    return 1;  }}
