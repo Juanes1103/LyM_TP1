@@ -111,9 +111,9 @@ if C [P]: Realiza la verificación de que la condición se cumpla y luego realiz
 
 TOKEN : /* Comandos Básicos */
 {
-  < FORWARD : <OPF>< SIGN >(< SIGN >)?(< DIGIT >)+ >
-| < BACK : < OPB >< SIGN >(< SIGN >)?(< DIGIT >)+>
-| < TURN : < OPT >< SIGN >(< SIGN >)?(< DIGIT >)+ >
+  < FORWARD : <OPF>< SIGN >(< SIGN >)?((< DIGIT >)+|(< LETTER >)+) >
+| < BACK : < OPB >< SIGN >(< SIGN >)?((< DIGIT >)+|(< LETTER >)+)>
+| < TURN : < OPT >< SIGN >(< SIGN >)?((< DIGIT >)+|(< LETTER >)+) >
 
 | < CLEARSCREEN : < OPCS >>
 | < PENUP : "penup" >
@@ -122,35 +122,34 @@ TOKEN : /* Comandos Básicos */
 | < SHOW : "showturtle" >
 
 | < HOME : "home">
-| < SETX : "setx"< SIGN >(< SIGN >)?(< DIGIT >)+ >
-| < SETY : "sety"< SIGN >(< SIGN >)?(< DIGIT >)+ >
-| < SETXY : "setxy"< SIGN >(< SIGN >)?(< DIGIT >)+< SIGN >(< SIGN >)?(< DIGIT >)+>
+| < SETX : "setx"< SIGN >(< SIGN >)?((< DIGIT >)+|(< LETTER >)+) >
+| < SETY : "sety"< SIGN >(< SIGN >)?((< DIGIT >)+|(< LETTER >)+) >
+| < SETXY : "setxy"< SIGN >(< SIGN >)?((< DIGIT >)+|(< LETTER >)+)< SIGN >(< SIGN >)?((< DIGIT >)+|(< LETTER >)+)>
 | < SETHEADING : < OPSETH >< SIGN >(< DIGIT >)+>
 
-| < ARC : "arc"< SIGN >(< DIGIT >)+< SIGN >(< DIGIT >)+>
+| < ARC : "arc"< SIGN >((< DIGIT >)+|(< LETTER >)+)< SIGN >((< DIGIT >)+|(< LETTER >)+)>
 | < CHANGESHAPE : < OPCSH >< SIGN >((< SIGN >(< LETTER >)+)|(< DIGIT >)+)>
 
 | < POSITION : "pos" >
 | < XCOR : "xcor" >
 | < YCOR : "ycor" >
 | < HEADING : "heading" >
-| < TOWARDS : "towards list"< SIGN >(< SIGN >)?(< DIGIT >)+< SIGN >(< SIGN >)?(< DIGIT >)+>
+| < TOWARDS : "towards list"< SIGN >(< SIGN >)?((< DIGIT >)+|(< LETTER >)+)< SIGN >(< SIGN >)?((< DIGIT >)+|(< LETTER >)+)>
 
 | < LABEL : "label"< SIGN >< SIGN >(< LETTER >)+>
 | < FONT : "setlabelheight"< SIGN >(< DIGIT >)+>
 
 | < WIDTH : "setwidth"< SIGN >(< DIGIT >)+ >
 
-| < TO : "to"< SIGN >(< LETTER >)+< SIGN > (< SIGN >(< LETTER >)+)? < SIGN >((< SIGN >)?(< LETTER >)+ < SIGN > | (< SIGN >)?(< LETTER >)+< SIGN >(< DIGIT >)+< SIGN >)+< SIGN >"end">
+| < TO : "to"< SIGN >(< LETTER >)+< SIGN > ((< LETTER >)+|(< SIGN >)+|(< DIGIT >)+)+ < SIGN >"end">
 | < COLOR : "setcolor"< SIGN >(< DIGIT >)+>
-| < PRINT : "print"< SIGN >< SIGN >(< LETTER >)+>
+| < PRINT : "print"< SIGN >(< SIGN >)?((< LETTER >)+|(< SIGN >)+|(< DIGIT >)+)+>
 | < RANDOM : "random"< SIGN >(< DIGIT >)+>
 
 | < MAKE : "make"< SIGN >< SIGN >(< LETTER >)+< SIGN >(< DIGIT >)+ >
 | < SUM : "sum"< SIGN >(< DIGIT >)+< SIGN >(< DIGIT >)+>
 | < DIFFERENCE : "difference"< SIGN >(< DIGIT >)+< SIGN >(< DIGIT >)+>
 }
-
 
 TOKEN : /* OPCIONES */
 {
@@ -168,13 +167,17 @@ TOKEN : //Loops
 | < FOR : "for"< SIGN >< SIGN >((< LETTER >)+|(< DIGIT >)+)*< SIGN >< SIGN >< SIGN >(< LETTER >)+ < SIGN >(< LETTER >)+< SIGN >>
 | < IF : "if" < SIGN >((< SIGN >)?(< LETTER >)+|(< DIGIT >)+)(< SIGN >)+((< LETTER >)+|(< DIGIT >)+)< SIGN >< SIGN >((< SIGN >)?(< LETTER >)+ < SIGN > | (< SIGN >)?(< LETTER >)+< SIGN >(< DIGIT >)+< SIGN >)+ >
 }
-TOKEN :{ < CONSTANT : (< DIGIT >)+ >|  < #DIGIT : ["0"-"9"] >
+TOKEN :{ < CONSTANT : (< DIGIT >)+ >
+| < WORD : (< LETTER >)+ >
+| < #DIGIT : ["0"-"9"] >
 | < #LETTER : (["a" - "z"]|["A"-"Z"])>
-| < SIGN : ("-"|"\""|":"|" "|"["|"]"|"="|"<"|">") >| < JUMP : ("\n"|".") >
-}int one_line() :{}{   (< FORWARD > | < BACK > | < TURN > | < CLEARSCREEN >
+| < SIGN : ("-"|"\""|":"|" "|"["|"]"|"="|"<"|">"|"/"|"+"|"*") >| < JUMP : ("\n"|".") >
+}
+int one_line() :{}{   (< FORWARD > | < BACK > | < TURN > | < CLEARSCREEN >
     | < PENUP > | < PENDOWN > | < HIDE > | < SHOW >
-    | < HOME > | < SETX > | < SETY > |< SETHEADING >
+    | < HOME > | < SETX > | < SETY > | < SETXY > | < SETHEADING >
     | < ARC > | < CHANGESHAPE > | < POSITION > | < XCOR >
     | < YCOR > | < HEADING > | < TOWARDS > | < LABEL > | < FONT >
-    | < WIDTH > | < TO > | < COLOR > | < PRINT > | < RANDOM > | < MAKE >
-    | < SUM > | < DIFFERENCE > | < LOOP > | < FOR > | < IF >| < JUMP > | < SIGN >)  {    return 0;  }| "DONE"  {    return 1;  }}
+    | < WIDTH > | < COLOR >| < RANDOM > | < SUM > | < DIFFERENCE >
+    | < TO > | < PRINT >  | < MAKE > | < LOOP > | < FOR >
+    | < IF >| < JUMP > | < SIGN >| < CONSTANT > | < WORD >)  {    return 0;  }| "DONE!"  {    return 1;  }}
